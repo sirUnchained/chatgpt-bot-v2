@@ -1,9 +1,10 @@
 {
-  "name": "001_start_chatgpt",
-  "version": "1.0.0",
+  "name": "advance bot",
+  "version": "2.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "dotenv -e .env node ./src/index.js"
+    "start": "dotenv -e .env node ./src/index.js",
+    "dev": "dotenv -e .env nodemon ./src/index.js"
   },
   "keywords": [],
   "author": "",

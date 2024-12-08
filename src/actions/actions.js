@@ -1,15 +1,19 @@
 const { Markup } = require("telegraf");
-const usersDB = require("./../databases/controllers/users.controller");
-const actionDB = require("./../databases/controllers/actions.controller");
 const path = require("node:path");
 const fs = require("node:fs");
+
+const usersDB = require("./../databases/controllers/users.controller");
+const actionDB = require("./../databases/controllers/actions.controller");
 
 const sendStartMsg = async (ctx) => {
   const chatId = ctx.chat.id;
   let user = usersDB.findOne("chatId", chatId);
 
   if (user) {
-    if (user.name !== ctx.update.message.from.first_name) {
+    if (
+      user.name !== ctx.update.message?.from?.first_name &&
+      ctx.update.message?.from?.first_name
+    ) {
       usersDB.update(chatId, "name", ctx.update.message.from.first_name);
       user = usersDB.findOne("chatId", chatId);
     }
@@ -18,15 +22,15 @@ const sendStartMsg = async (ctx) => {
       `خوش برگشتی کاربر ${user.name} !`,
       Markup.inlineKeyboard([
         [
-          Markup.button.callback("gpt4o", "gpt4o"),
-          Markup.button.callback("gpt3-turbo", "turbo"),
+          Markup.button.callback("chat_gpt", "chat_gpt"),
+          Markup.button.callback("translation", "chose_translation_engine"),
         ],
       ])
     );
     return;
   }
 
-  usersDB.create(chatId, ctx.update.message.from.first_name);
+  usersDB.create(chatId, ctx.update.message?.from.first_name);
   actionDB.create(chatId);
 
   const welcomVidPath = path.join(
@@ -47,8 +51,11 @@ const sendStartMsg = async (ctx) => {
         reply_markup: {
           inline_keyboard: [
             [
-              { text: "gpt4o", callback_data: "gpt4o" },
-              { text: "gpt3-turbo", callback_data: "turbo" },
+              { text: "chat_gpt", callback_data: "chat_gpt" },
+              {
+                text: "translation",
+                callback_data: "chose_translation_engine",
+              },
             ],
           ],
         },
@@ -61,15 +68,11 @@ const sendStartMsg = async (ctx) => {
     "خوش اومدی کاربر جدید.",
     Markup.inlineKeyboard([
       [
-        Markup.button.callback("gpt4o", "gpt4o"),
-        Markup.button.callback("gpt3-turbo", "turbo"),
+        Markup.button.callback("chat_gpt", "chat_gpt"),
+        Markup.button.callback("translation", "chose_translation_engine"),
       ],
     ])
   );
-};
-
-const setDataInRedis = async (pattern, data) => {
-  await ctx.editedMessage(sayHello[Math.floor(Math.random() * 10)]);
 };
 
 module.exports = { sendStartMsg };

@@ -9,12 +9,12 @@ const findOne = (key, value, index = false) => {
 
   if (index) {
     const result = db.findIndex((item) => {
-      return item[key] === value;
+      return item[key] == value;
     });
     return result;
   }
   const result = db.find((item) => {
-    return item[key] === value;
+    return item[key] == value;
   });
   return result !== undefined ? result : false;
 };
@@ -39,6 +39,16 @@ const update = (chatId, key, value) => {
   const itemIndex = findOne("chatId", chatId, true);
   if (itemIndex == -1) return false;
 
+  if (key === "t_lang") {
+    db[itemIndex].translation.target = value;
+    fs.writeFileSync(dbPath, JSON.stringify([...db]));
+    return true;
+  } else if (key === "t_engine") {
+    db[itemIndex].translation.engine = value;
+    fs.writeFileSync(dbPath, JSON.stringify([...db]));
+    return true;
+  }
+
   db[itemIndex][key] = value;
 
   fs.writeFileSync(dbPath, JSON.stringify([...db]));
@@ -56,8 +66,13 @@ const create = (chatId) => {
     id: crypto.randomUUID(),
     chatId,
     createdAt: new Date(),
-    gpt_action: "gpt3.5-turbo",
-    translation: "google",
+    gpt: "gpt3.5-turbo",
+    translation: {
+      engine: "google",
+      source: "fa",
+      target: "en",
+    },
+    current_status: null,
   };
 
   fs.writeFileSync(dbPath, JSON.stringify([...db, newData]));
