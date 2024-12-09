@@ -11,7 +11,7 @@
 - translation using google, microsoft, yandex
 - chat gpt
 
-## comming soob
+## comming soon
 - compile cpp, js and python
 - group administration
 
