@@ -53,7 +53,8 @@ const sendTargetLanguage = async (ctx) => {
 };
 
 const translateText = async (ctx, chatId, userText) => {
-  if (waitList.has(chatId)) {
+  const user = usersDB.findOne("chatId", chatId);
+  if (user.role !== "admin" && waitList.has(chatId)) {
     await ctx.reply("لطفا 20 ثانیه صبر کنید .");
     return;
   }
@@ -79,23 +80,25 @@ const translateText = async (ctx, chatId, userText) => {
   const result = await response.json();
 
   const robotMsg = result.result
-    .replace(/\-/g, "\\-")
-    .replace(/\_/g, "\\_")
-    .replace(/\*/g, "\\*")
-    .replace(/\[/g, "\\[")
-    .replace(/\]/g, "\\]")
-    .replace(/\(/g, "\\(")
-    .replace(/\)/g, "\\)")
-    .replace(/\~/g, "\\~")
-    .replace(/\>/g, "\\>")
-    .replace(/\#/g, "\\#")
-    .replace(/\+/g, "\\+")
-    .replace(/\=/g, "\\=")
-    .replace(/\|/g, "\\|")
-    .replace(/\{/g, "\\{")
-    .replace(/\}/g, "\\}")
-    .replace(/\./g, "\\.")
-    .replace(/\!/g, "\\!");
+    ? result.result
+        .replace(/\-/g, "\\-")
+        .replace(/\_/g, "\\_")
+        .replace(/\*/g, "\\*")
+        .replace(/\[/g, "\\[")
+        .replace(/\]/g, "\\]")
+        .replace(/\(/g, "\\(")
+        .replace(/\)/g, "\\)")
+        .replace(/\~/g, "\\~")
+        .replace(/\>/g, "\\>")
+        .replace(/\#/g, "\\#")
+        .replace(/\+/g, "\\+")
+        .replace(/\=/g, "\\=")
+        .replace(/\|/g, "\\|")
+        .replace(/\{/g, "\\{")
+        .replace(/\}/g, "\\}")
+        .replace(/\./g, "\\.")
+        .replace(/\!/g, "\\!")
+    : result;
 
   if (result.status == 200) {
     await ctx.replyWithMarkdownV2(`\`${robotMsg}\``);

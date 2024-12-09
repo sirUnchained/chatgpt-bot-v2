@@ -11,7 +11,7 @@ const sendGptResult = async (ctx, chatId, userText) => {
     await ctx.reply("عزیزم شرمنده محدودیت ۲۰ درخواست در هفته شما فعلا پر شده.");
     return;
   }
-  if (waitList.has(chatId)) {
+  if (user.role !== "admin" && waitList.has(chatId)) {
     await ctx.reply("لطفا بعد از ده ثانیه دوباره پیام دهید.");
     return;
   }
@@ -39,24 +39,26 @@ const sendGptResult = async (ctx, chatId, userText) => {
     );
 
     const result = await response.json();
-    const robotMsg = result.result[0]
-      .replace(/\-/g, "\\-")
-      .replace(/\_/g, "\\_")
-      .replace(/\*/g, "\\*")
-      .replace(/\[/g, "\\[")
-      .replace(/\]/g, "\\]")
-      .replace(/\(/g, "\\(")
-      .replace(/\)/g, "\\)")
-      .replace(/\~/g, "\\~")
-      .replace(/\>/g, "\\>")
-      .replace(/\#/g, "\\#")
-      .replace(/\+/g, "\\+")
-      .replace(/\=/g, "\\=")
-      .replace(/\|/g, "\\|")
-      .replace(/\{/g, "\\{")
-      .replace(/\}/g, "\\}")
-      .replace(/\./g, "\\.")
-      .replace(/\!/g, "\\!");
+    const robotMsg = result.result
+      ? result.result[0]
+          .replace(/\-/g, "\\-")
+          .replace(/\_/g, "\\_")
+          .replace(/\*/g, "\\*")
+          .replace(/\[/g, "\\[")
+          .replace(/\]/g, "\\]")
+          .replace(/\(/g, "\\(")
+          .replace(/\)/g, "\\)")
+          .replace(/\~/g, "\\~")
+          .replace(/\>/g, "\\>")
+          .replace(/\#/g, "\\#")
+          .replace(/\+/g, "\\+")
+          .replace(/\=/g, "\\=")
+          .replace(/\|/g, "\\|")
+          .replace(/\{/g, "\\{")
+          .replace(/\}/g, "\\}")
+          .replace(/\./g, "\\.")
+          .replace(/\!/g, "\\!")
+      : result;
 
     if (result.status === 200) {
       await ctx.deleteMessage(pleasWaitMsg.message_id);
