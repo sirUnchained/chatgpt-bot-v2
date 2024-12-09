@@ -12,6 +12,10 @@ const {
   sendTargetLanguage,
   translateText,
 } = require("./modules/translate/translate.actions");
+const {
+  readPicSendText,
+  selectPicLang,
+} = require("./modules/photo_text/photo_text.actions");
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
@@ -96,6 +100,40 @@ bot.action("tr", async (ctx) => {
 
   await ctx.reply("خب حالا متن فارسی رو بده ببینیم چه میکنم .");
 });
+// photo to text
+bot.action("photo_text", async (ctx) => {
+  await selectPicLang(ctx);
+});
+bot.action("eng", async (ctx) => {
+  const chatId = ctx.chat.id;
+  actionsDB.update(chatId, "pic_lang", "eng");
+
+  await ctx.reply("خب حالا عکسو بده ببینم چه میکنم.");
+});
+bot.action("fra", async (ctx) => {
+  const chatId = ctx.chat.id;
+  actionsDB.update(chatId, "pic_lang", "fra");
+
+  await ctx.reply("خب حالا عکسو بده ببینم چه میکنم.");
+});
+bot.action("deu", async (ctx) => {
+  const chatId = ctx.chat.id;
+  actionsDB.update(chatId, "pic_lang", "deu");
+
+  await ctx.reply("خب حالا عکسو بده ببینم چه میکنم.");
+});
+bot.action("tur", async (ctx) => {
+  const chatId = ctx.chat.id;
+  actionsDB.update(chatId, "pic_lang", "tur");
+
+  await ctx.reply("خب حالا عکسو بده ببینم چه میکنم.");
+});
+bot.action("fas", async (ctx) => {
+  const chatId = ctx.chat.id;
+  actionsDB.update(chatId, "pic_lang", "fas");
+
+  await ctx.reply("خب حالا عکسو بده ببینم چه میکنم.");
+});
 
 bot.on("text", async (ctx) => {
   const userText = ctx.text;
@@ -119,21 +157,11 @@ bot.on("text", async (ctx) => {
   }
 });
 
+bot.on("photo", async (ctx) => {
+  await readPicSendText(ctx);
+});
+
 bot.action("back", async (ctx) => {
-  // const chatId = ctx.chat.id;
-
-  // const user = usersDB.findOne("chatId", chatId);
-
-  // switch (user.current_status) {
-  //   case "gpt":
-  //     break;
-  //   case "translation":
-  //     break;
-
-  //   default:
-  //     break;
-  // }
-
   await sendStartMsg(ctx);
 });
 

@@ -73,6 +73,7 @@ const create = (chatId) => {
       target: "en",
     },
     current_status: null,
+    pic_lang: "eng",
   };
 
   fs.writeFileSync(dbPath, JSON.stringify([...db, newData]));

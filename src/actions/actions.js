@@ -22,9 +22,10 @@ const sendStartMsg = async (ctx) => {
       `خوش برگشتی کاربر ${user.name} !`,
       Markup.inlineKeyboard([
         [
-          Markup.button.callback("chat_gpt", "chat_gpt"),
-          Markup.button.callback("translation", "chose_translation_engine"),
+          Markup.button.callback("چت جی پی تی", "chat_gpt"),
+          Markup.button.callback("ترجمه", "chose_translation_engine"),
         ],
+        [Markup.button.callback("عکس به متن", "photo_text")],
       ])
     );
     return;
@@ -57,6 +58,7 @@ const sendStartMsg = async (ctx) => {
                 callback_data: "chose_translation_engine",
               },
             ],
+            [{ text: "عکس به متن", callback_data: "photo_text" }],
           ],
         },
       }
@@ -71,6 +73,7 @@ const sendStartMsg = async (ctx) => {
         Markup.button.callback("chat_gpt", "chat_gpt"),
         Markup.button.callback("translation", "chose_translation_engine"),
       ],
+      [Markup.button.callback("عکس به متن", "photo_text")],
     ])
   );
 };
