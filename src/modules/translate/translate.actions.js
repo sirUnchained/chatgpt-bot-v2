@@ -106,7 +106,7 @@ const translateText = async (ctx, chatId, userText) => {
     await ctx.reply("خب انگار از سمت سرویس دهنده خطا داریم.");
   }
 
-  setInterval(() => {
+  setTimeout(() => {
     waitList.delete(chatId);
   }, 20 * 1000);
 };

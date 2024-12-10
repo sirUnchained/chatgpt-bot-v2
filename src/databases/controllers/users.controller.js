@@ -61,6 +61,7 @@ const create = (chatId, name) => {
     chatId,
     role: dbDocs ? "user" : "admin",
     used_count: 0,
+    warn: 0,
     createdAt: new Date(),
   };
 

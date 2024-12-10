@@ -2,6 +2,7 @@ const { Telegraf, Markup } = require("telegraf");
 
 const actionsDB = require("./databases/controllers/actions.controller");
 const usersDB = require("./databases/controllers/users.controller");
+
 const { sendStartMsg } = require("./actions/actions");
 const {
   sendGptResult,
@@ -16,6 +17,10 @@ const {
   readPicSendText,
   selectPicLang,
 } = require("./modules/photo_text/photo_text.actions");
+const {
+  checkMessageAndBAN,
+  checkCommandsAndRun,
+} = require("./modules/group_administration/group_administration.actions");
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
@@ -134,33 +139,51 @@ bot.action("fas", async (ctx) => {
 
   await ctx.reply("خب حالا عکسو بده ببینم چه میکنم.");
 });
+// group administration
+bot.on("new_chat_members", async (ctx) => {
+  if (!usersDB.findOne("chatId", ctx.chat.id)) {
+    usersDB.create(ctx.chat.id, ctx.update.message?.from.first_name);
+  }
+  await ctx.reply(
+    `خوش اومدی ${ctx.message.new_chat_members[0].first_name} عزیز.`
+  );
+});
+bot.on("left_chat_member", async (ctx) => {
+  await ctx.reply(`کاربر ${ctx.message.left_chat_member.first_name} لفت داد.`);
+});
 
 bot.on("text", async (ctx) => {
   const userText = ctx.text;
   const chatId = ctx.chat.id;
   const action = actionsDB.findOne("chatId", chatId);
+  const currentUser = usersDB.findOne("chatId", chatId);
+  const chatType = ctx.chat.type;
 
-  switch (true) {
-    case action.current_status === "gpt":
-      await sendGptResult(ctx, chatId, userText);
+  if (chatType === "private") {
+    switch (true) {
+      case action.current_status === "gpt":
+        await sendGptResult(ctx, chatId, userText);
+        break;
+      case action.current_status === "translation":
+        await translateText(ctx, chatId, userText);
+        break;
 
-      break;
-    case action.current_status === "translation":
-      await translateText(ctx, chatId, userText);
+      // case action.current_status === "coding":
+      //   break;
 
-      break;
+      default:
+        await ctx.reply("هنوز تعیین نکردی برات چیکار کنم.");
+        break;
+    }
+  } else {
+    await checkMessageAndBAN(ctx);
 
-    default:
-      await ctx.reply("هنوز تعیین نکردی برات چیکار کنم.");
-
-      break;
+    if (ctx.message.reply_to_message) await checkCommandsAndRun(ctx);
   }
 });
-
 bot.on("photo", async (ctx) => {
   await readPicSendText(ctx);
 });
-
 bot.action("back", async (ctx) => {
   await sendStartMsg(ctx);
 });
