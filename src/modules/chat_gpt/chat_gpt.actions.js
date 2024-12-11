@@ -43,7 +43,6 @@ const sendGptResult = async (ctx, chatId, userText) => {
       ? result.result[0]
           .replace(/\-/g, "\\-")
           .replace(/\_/g, "\\_")
-          .replace(/\*/g, "\\*")
           .replace(/\[/g, "\\[")
           .replace(/\]/g, "\\]")
           .replace(/\(/g, "\\(")
@@ -62,7 +61,13 @@ const sendGptResult = async (ctx, chatId, userText) => {
 
     if (result.status === 200) {
       await ctx.deleteMessage(pleasWaitMsg.message_id);
-      await ctx.replyWithMarkdownV2(robotMsg);
+
+      let sendingResult = "";
+      for (let i = 0; i < robotMsg.length; i += 4090) {
+        sendingResult = robotMsg.slice(i, i + 4090);
+        await ctx.replyWithMarkdownV2(sendingResult);
+      }
+
       usersDB.update(chatId, "used_count", user.used_count + 1);
     } else {
       await ctx.deleteMessage(pleasWaitMsg.message_id);

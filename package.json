@@ -1,6 +1,6 @@
 {
   "name": "advance bot",
-  "version": "2.0.0",
+  "version": "2.3.1",
   "main": "index.js",
   "scripts": {
     "start": "dotenv -e .env node ./src/index.js",
